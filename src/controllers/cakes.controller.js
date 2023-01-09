@@ -1,5 +1,5 @@
 import joi from "joi";
-import {connectionDB} from "../db/db.js";
+import { connectionDB } from "../db/db.js";
 
 const cakesJOI = joi.object({
     name: joi.string().required().min(2),
@@ -9,9 +9,9 @@ const cakesJOI = joi.object({
 });
 
 
-export async function postCakes(req, res){
+export async function postCakes(req, res) {
 
-    const { name, price, image, description} = req.body
+    const { name, price, image, description } = req.body
     const validacao = cakesJOI.validate({ name, price, image, description }, { abortEarly: false })
 
     if (validacao.error) {
@@ -24,12 +24,12 @@ export async function postCakes(req, res){
         return res.sendStatus(400);
     }
 
-    try{
+    try {
         await connectionDB.query(`INSERT INTO cakes ("name", "price", "image", "description") VALUES ($1, $2, $3, $4);`, [name, price, image, description])
         res.sendStatus(201);
-    }catch (err) {
+    } catch (err) {
         console.log(err);
         res.sendStatus(500);
     }
-    
+
 }
