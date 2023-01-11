@@ -1,24 +1,10 @@
-import joi from "joi";
 import {connectionDB} from "../db/db.js";
 import dayjs from "dayjs";
-
-const ordersJOI = joi.object({
-    clientId:  joi.number().required(),
-    cakeId:  joi.number().required(),
-    quantity: joi.number().required().min(1).max(5)
-})
 
 export async function postOrder(req, res){
 
     const {clientId, cakeId, quantity} = req.body
-    const validacao = ordersJOI.validate({ clientId, cakeId, quantity }, { abortEarly: false })
-
-    if (validacao.error) {
-        const erros = validacao.error.details.map((d) => d.message)
-        res.status(422).send(erros);
-        return
-    }
-
+    
     const clientExist = await connectionDB.query('SELECT * FROM clients WHERE id = $1', [clientId]);
 
     if(!clientExist.rows[0]) {
