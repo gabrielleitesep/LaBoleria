@@ -1,4 +1,4 @@
-import { connectionDB } from "../db/db.js";
+import { insertClients, getClientsById, getOrdersByClientId } from "../repositories/client.repository.js";
 
 export async function postClients(req, res) {
 
@@ -9,7 +9,7 @@ export async function postClients(req, res) {
     }
 
     try {
-        await connectionDB.query(`INSERT INTO clients ("name", "address", "phone") VALUES ($1, $2, $3);`, [name, address, phone])
+        await insertClients(name, address, phone);
         res.sendStatus(201);
     } catch (err) {
         console.log(err);
@@ -22,12 +22,12 @@ export async function getClientsOrders(req, res) {
         const {id} = req.params
         
         try {
-            const clientById = await connectionDB.query('SELECT * FROM clients WHERE id = $1', [id]);
+            const clientById = await getClientsById(id);
         if (!clientById.rows[0]) {
             return res.status(404).send("O usuário não existe");
         }
     
-        const ordersByClient = await connectionDB.query('SELECT * FROM orders WHERE "clientId" = $1', [id]);
+        const ordersByClient = await getOrdersByClientId(id);
         if (!ordersByClient.rows[0]) {
             return res.status(404).send("O usuário não fez nenhum pedido");
         } 
